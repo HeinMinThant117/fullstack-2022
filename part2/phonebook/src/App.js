@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import personService from './services/persons'
 
 const SearchFilter = ({ handleFilterChange }) => (
   <div>
@@ -27,28 +29,31 @@ const PhoneForm = ({ handleNameChange, handlePhoneChange, handleSubmit }) => {
   )
 }
 
-const NumbersList = ({ persons, filter }) => {
+const NumbersList = ({ persons, filter, handleDelete }) => {
   return (
     <div>
       <h2>Numbers</h2>
       {persons
         .filter((person) => new RegExp(filter, 'i').test(person.name))
         .map((filteredPerson) => (
-          <p>
+          <div key={filteredPerson.id}>
             {filteredPerson.name} - {filteredPerson.number}
-          </p>
+            <button onClick={() => handleDelete(filteredPerson)}>delete</button>
+          </div>
         ))}
     </div>
   )
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '0925123123' },
-  ])
+  const [persons, setPersons] = useState([])
   const [filter, setFilter] = useState('')
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
+
+  useEffect(() => {
+    personService.getAll().then((response) => setPersons(response.data))
+  }, [])
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -56,11 +61,37 @@ const App = () => {
     if (newName !== '') {
       for (let i = 0; i < persons.length; i++) {
         if (newName === persons[i].name) {
-          alert(`${persons[i].name} is already added`)
+          if (
+            window.confirm(
+              `${persons[i].name} is already added, update phone number ?`
+            )
+          ) {
+            let personId = persons[i].id
+            let data = {
+              name: newName,
+              number: newPhone,
+            }
+
+            personService
+              .update(personId, data)
+              .then((response) =>
+                setPersons(
+                  persons.map((person) =>
+                    person.id === response.data.id ? response.data : person
+                  )
+                )
+              )
+          }
+          //   alert(`${persons[i].name} is already added`)
           return
         }
       }
-      setPersons([...persons, { name: newName, number: newPhone }])
+
+      const data = { id: persons.length + 1, name: newName, number: newPhone }
+      personService
+        .create(data)
+        .then((response) => setPersons(persons.concat(response.data)))
+      //   setPersons([...persons, { name: newName, number: newPhone }])
     }
   }
 
@@ -70,6 +101,19 @@ const App = () => {
 
   const handlePhoneChange = (event) => {
     setNewPhone(event.target.value)
+  }
+
+  const handleDelete = (person) => {
+    let personId = person.id
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      personService
+        .remove(personId)
+        .then((response) =>
+          setPersons(
+            persons.filter((filterPerson) => filterPerson.id !== personId)
+          )
+        )
+    }
   }
 
   const handleFilterChange = (event) => setFilter(event.target.value)
@@ -83,7 +127,11 @@ const App = () => {
         handlePhoneChange={handlePhoneChange}
         handleSubmit={handleSubmit}
       />
-      <NumbersList persons={persons} filter={filter} />
+      <NumbersList
+        persons={persons}
+        filter={filter}
+        handleDelete={handleDelete}
+      />
     </div>
   )
 }
