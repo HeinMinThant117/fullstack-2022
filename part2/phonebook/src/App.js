@@ -1,6 +1,6 @@
-import axios from 'axios'
 import { useEffect, useState } from 'react'
 import personService from './services/persons'
+import './index.css'
 
 const SearchFilter = ({ handleFilterChange }) => (
   <div>
@@ -51,6 +51,9 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
 
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
+
   useEffect(() => {
     personService.getAll().then((response) => setPersons(response.data))
   }, [])
@@ -81,16 +84,33 @@ const App = () => {
                   )
                 )
               )
+              .catch((response) => {
+                setErrorMessage(
+                  `${data.name} is already deleted from the server`
+                )
+                setPersons(persons.filter((person) => person.id !== personId))
+                setTimeout(() => {
+                  setErrorMessage(null)
+                }, 5000)
+              })
           }
           //   alert(`${persons[i].name} is already added`)
           return
         }
       }
 
-      const data = { id: persons.length + 1, name: newName, number: newPhone }
-      personService
-        .create(data)
-        .then((response) => setPersons(persons.concat(response.data)))
+      const data = {
+        id: persons[persons.length - 1].id + 1,
+        name: newName,
+        number: newPhone,
+      }
+      personService.create(data).then((response) => {
+        setPersons(persons.concat(response.data))
+        setSuccessMessage(`Added ${response.data.name}`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
+      })
       //   setPersons([...persons, { name: newName, number: newPhone }])
     }
   }
@@ -121,6 +141,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      {successMessage && <div className='success'>{successMessage}</div>}
+      {errorMessage && <div className='error'>{errorMessage}</div>}
+
       <SearchFilter handleFilterChange={handleFilterChange} />
       <PhoneForm
         handleNameChange={handleNameChange}
