@@ -4,6 +4,7 @@ const app = require('../app')
 const blog = require('../models/blog')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_helper')
 
 beforeEach(async () => {
@@ -38,11 +39,18 @@ test('a specific blog can be viewed', async () => {
   expect(resultBlog.body).toEqual(processedBlogToView)
 }, 100000)
 
-test('a note can be deleted', async () => {
+test('a blog can be deleted', async () => {
+  const user = await api
+    .post('/api/login')
+    .send({ username: 'root', password: 'sekret' })
+
+  const token = user.body.token
   const blogsAtStart = await helper.blogsInDb()
   const blogToDelete = blogsAtStart[0]
 
-  await api.delete(`/api/blogs/${blogToDelete.id}`)
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', `Bearer ${token}`)
 
   const blogsAtEnd = await helper.blogsInDb()
 
@@ -61,8 +69,15 @@ test('a valid blog can be added', async () => {
     likes: 99,
   }
 
+  const user = await api
+    .post('/api/login')
+    .send({ username: 'root', password: 'sekret' })
+
+  const token = user.body.token
+
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -88,15 +103,34 @@ test('adding a blog object without likes default likes to 0', async () => {
     author: 'Tester boi',
     url: 'test.com',
   }
+  const user = await api
+    .post('/api/login')
+    .send({ username: 'root', password: 'sekret' })
 
-  const savedBlog = await api.post('/api/blogs').send(newBlog)
+  const token = user.body.token
+
+  const savedBlog = await api
+    .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
+    .send(newBlog)
 
   expect(savedBlog.body.likes).toEqual(0)
 }, 100000)
 
 test('adding a blog without title or url, return a 400 bad request', async () => {
   const newBlog = {}
-  await api.post('/api/blogs').send(newBlog).expect(400)
+
+  const user = await api
+    .post('/api/login')
+    .send({ username: 'root', password: 'sekret' })
+
+  const token = user.body.token
+
+  await api
+    .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
+    .send(newBlog)
+    .expect(400)
 })
 
 test('updating a blog works', async () => {
@@ -113,6 +147,7 @@ test('updating a blog works', async () => {
     url: 'eating.com',
     likes: 500,
     id: blogToUpdate.id,
+    user: '623c1b2248cb85c76de33638',
   })
 })
 

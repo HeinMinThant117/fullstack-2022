@@ -7,12 +7,14 @@ const initialBlogs = [
     author: 'Dyanamo',
     url: 'dynamosite.com',
     likes: 10,
+    user: '623c1b2248cb85c76de33638',
   },
   {
     title: 'Turkey Sandwich',
     author: 'Jeremy',
     url: 'jeremycooking.com',
     likes: 2,
+    user: '623c1b2248cb85c76de33638',
   },
 ]
 
