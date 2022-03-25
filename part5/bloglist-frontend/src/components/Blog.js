@@ -14,7 +14,6 @@ const Blog = ({ blog, updateBlog }) => {
       likes: blog.likes + 1,
     }
     updateBlog(blog.id, newBlog)
-
   }
 
   return (
@@ -25,20 +24,21 @@ const Blog = ({ blog, updateBlog }) => {
         border: '1px solid black',
         padding: '5px',
       }}
+      className='blog'
     >
       <div>
         {blog.title} {blog.author}
-        <button onClick={toggleBlogVisibility}>
+        <button className='showButton' onClick={toggleBlogVisibility}>
           {blogVisible ? 'hide' : 'view'}
         </button>
       </div>
       {blogVisible && (
-        <div>
-          <div>{blog.url}</div>
-          <div>
-            likes {blog.likes} <button onClick={handleLike}>like</button>
+        <div className='blogDetailed'>
+          <div className='blogUrl'>{blog.url}</div>
+          <div className='blogLikes'>
+            likes {blog.likes} <button className='likeBtn' onClick={handleLike}>like</button>
           </div>
-          <div>{blog.user.username}</div>
+          <div className='blogUsername'>{blog.user.username}</div>
         </div>
       )}
     </div>
