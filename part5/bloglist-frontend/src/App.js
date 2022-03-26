@@ -48,7 +48,7 @@ const App = () => {
     try {
       const user = await loginService.login(username, password)
       setUser(user)
-
+      blogService.setToken(user.token)
       window.localStorage.setItem('loggedBlogUser', JSON.stringify(user))
     } catch (exception) {
       setNotiMessage('wrong username or password')
@@ -69,6 +69,7 @@ const App = () => {
   const createBlog = async (title, author, url) => {
     try {
       const savedBlog = await blogService.create({ title, author, url })
+      console.log(savedBlog)
       setNotiMessage(
         `a new blog ${savedBlog.title} by ${savedBlog.author} has been added`
       )
@@ -90,6 +91,15 @@ const App = () => {
       )
     } catch (exception) {
       console.log(exception.body)
+    }
+  }
+
+  const deleteBlog = async (id) => {
+    try {
+      await blogService.remove(id)
+      setBlogs(blogs.filter((blog) => blog.id !== id))
+    } catch (exception) {
+      console.log(exception.message)
     }
   }
 
@@ -116,7 +126,13 @@ const App = () => {
           {blogs
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
-              <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+              <Blog
+                key={blog.id}
+                blog={blog}
+                user={user}
+                updateBlog={updateBlog}
+                deleteBlog={deleteBlog}
+              />
             ))}
         </div>
       ) : (
