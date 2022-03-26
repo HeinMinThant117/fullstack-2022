@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import personService from './services/persons'
+import loginService from './services/login'
 import './index.css'
 
 const SearchFilter = ({ handleFilterChange }) => (
@@ -8,26 +9,26 @@ const SearchFilter = ({ handleFilterChange }) => (
   </div>
 )
 
-const PhoneForm = ({ handleNameChange, handlePhoneChange, handleSubmit }) => {
-  return (
-    <div>
-      <h2>Add new</h2>
-      <form>
-        <div>
-          name: <input onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input onChange={handlePhoneChange} />
-        </div>
-        <div>
-          <button onClick={handleSubmit} type='submit'>
-            add
-          </button>
-        </div>
-      </form>
-    </div>
-  )
-}
+// const PhoneForm = ({ handleNameChange, handlePhoneChange, handleSubmit }) => {
+//   return (
+//     <div>
+//       <h2>Add new</h2>
+//       <form>
+//         <div>
+//           name: <input onChange={handleNameChange} />
+//         </div>
+//         <div>
+//           number: <input onChange={handlePhoneChange} />
+//         </div>
+//         <div>
+//           <button onClick={handleSubmit} type='submit'>
+//             add
+//           </button>
+//         </div>
+//       </form>
+//     </div>
+//   )
+// }
 
 const NumbersList = ({ persons, filter, handleDelete }) => {
   return (
@@ -50,6 +51,10 @@ const App = () => {
   const [filter, setFilter] = useState('')
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
+
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
 
   const [successMessage, setSuccessMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
@@ -104,14 +109,42 @@ const App = () => {
         name: newName,
         number: newPhone,
       }
-      personService.create(data).then((response) => {
-        setPersons(persons.concat(response.data))
-        setSuccessMessage(`Added ${response.data.name}`)
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000)
-      })
+      personService
+        .create(data)
+        .then((response) => {
+          setPersons(persons.concat(response.data))
+          setSuccessMessage(`Added ${response.data.name}`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
+        })
+        .catch((error) => {
+          setErrorMessage(error.response.data.error)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+          //   console.log(error.response.data.error)
+        })
       //   setPersons([...persons, { name: newName, number: newPhone }])
+    }
+  }
+
+  const handleLogin = async (event) => {
+    event.preventDefault()
+
+    try {
+      const user = await loginService.login({
+        username,
+        password,
+      })
+      setUser(user)
+      setUsername('')
+      setPassword('')
+    } catch (exception) {
+      setErrorMessage('Wrong credentials')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 
@@ -138,6 +171,49 @@ const App = () => {
 
   const handleFilterChange = (event) => setFilter(event.target.value)
 
+  const phoneForm = () => (
+    <div>
+      <h2>Add new</h2>
+      <form>
+        <div>
+          name: <input onChange={handleNameChange} />
+        </div>
+        <div>
+          number: <input onChange={handlePhoneChange} />
+        </div>
+        <div>
+          <button onClick={handleSubmit} type='submit'>
+            add
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+
+  const loginForm = () => (
+    <form onSubmit={handleLogin}>
+      <div>
+        username
+        <input
+          type='text'
+          value={username}
+          name='Username'
+          onChange={({ target }) => setUsername(target.value)}
+        />
+      </div>
+      <div>
+        password
+        <input
+          type='password'
+          value={password}
+          name='Password'
+          onChange={({ target }) => setPassword(target.value)}
+        />
+      </div>
+      <button type='submit'>login</button>
+    </form>
+  )
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -146,11 +222,7 @@ const App = () => {
       {errorMessage && <div className='error'>{errorMessage}</div>}
 
       <SearchFilter handleFilterChange={handleFilterChange} />
-      <PhoneForm
-        handleNameChange={handleNameChange}
-        handlePhoneChange={handlePhoneChange}
-        handleSubmit={handleSubmit}
-      />
+      {user ? phoneForm() : loginForm()}
       <NumbersList
         persons={persons}
         filter={filter}

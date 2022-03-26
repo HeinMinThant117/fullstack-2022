@@ -14,6 +14,7 @@ const Notification = ({ message, error }) => (
       backgroundColor: 'grey',
       color: error ? 'red' : 'green',
     }}
+    id='notiMessage'
   >
     {message}
   </h3>
@@ -53,10 +54,10 @@ const App = () => {
     } catch (exception) {
       setNotiMessage('wrong username or password')
       setErrorNoti(true)
-      setTimeout(() => {
-        setNotiMessage(null)
-        setErrorNoti(false)
-      }, 5000)
+      //   setTimeout(() => {
+      //     setNotiMessage(null)
+      //     setErrorNoti(false)
+      //   }, 5000)
     }
   }
 
