@@ -1,24 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Toggleable from './components/Toggleable'
+import { setNotification } from './reducers/notificationReducer'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
-const Notification = ({ message, error }) => (
-  <h3
-    style={{
-      border: '5px solid ' + error ? 'red' : 'green',
-      padding: '10px',
-      backgroundColor: 'grey',
-      color: error ? 'red' : 'green',
-    }}
-    id='notiMessage'
-  >
-    {message}
-  </h3>
-)
+const Notification = () => {
+  const notification = useSelector((state) => state.notification)
+  console.log(notification)
+
+  if (!notification.message) return null
+
+  return (
+    <h3
+      style={{
+        border: '5px solid ' + notification.error ? 'red' : 'green',
+        padding: '10px',
+        backgroundColor: 'grey',
+        color: notification.error ? 'red' : 'green',
+      }}
+      id='notiMessage'
+    >
+      {notification.message}
+    </h3>
+  )
+}
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -27,8 +36,8 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const [notiMessage, setNotiMessage] = useState('')
-  const [errorNoti, setErrorNoti] = useState(false)
+  const dispatch = useDispatch()
+
   const blogFormRef = useRef()
 
   useEffect(() => {
@@ -52,12 +61,7 @@ const App = () => {
       blogService.setToken(user.token)
       window.localStorage.setItem('loggedBlogUser', JSON.stringify(user))
     } catch (exception) {
-      setNotiMessage('wrong username or password')
-      setErrorNoti(true)
-      //   setTimeout(() => {
-      //     setNotiMessage(null)
-      //     setErrorNoti(false)
-      //   }, 5000)
+      dispatch(setNotification('wrong username or password', true))
     }
   }
 
@@ -70,14 +74,11 @@ const App = () => {
   const createBlog = async (title, author, url) => {
     try {
       const savedBlog = await blogService.create({ title, author, url })
-      console.log(savedBlog)
-      setNotiMessage(
-        `a new blog ${savedBlog.title} by ${savedBlog.author} has been added`
+      dispatch(
+        setNotification(
+          `a new blog ${savedBlog.title} by ${savedBlog.author} has been added`
+        )
       )
-      blogFormRef.current.toggleVisibility()
-      setTimeout(() => {
-        setNotiMessage(null)
-      }, 5000)
       setBlogs(blogs.concat(savedBlog))
     } catch (exception) {
       console.log(exception)
@@ -115,7 +116,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      {notiMessage && <Notification message={notiMessage} error={errorNoti} />}
+      <Notification />
       {user ? (
         <div>
           {user.username} has logged in{' '}
