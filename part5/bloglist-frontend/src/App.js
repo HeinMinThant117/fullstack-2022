@@ -9,7 +9,7 @@ import { setNotification } from './reducers/notificationReducer'
 import { setUser } from './reducers/userReducer'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import UserInfo from './components/UserInfo'
 import User from './components/User'
 import BlogView from './components/BlogView'
@@ -88,9 +88,11 @@ const App = () => {
       <Notification />
       {user ? (
         <div>
-          {user.username} has logged in{' '}
-          <button onClick={handleLogout}>log out</button>
           <Router>
+            <Link to='/'>blogs</Link>
+            <Link to='/users'>users</Link>
+            {user.username} has logged in{' '}
+            <button onClick={handleLogout}>log out</button>
             <Routes>
               <Route
                 path='/'

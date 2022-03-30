@@ -58,6 +58,7 @@ blogsRouter.post(
         url: body.url,
         likes: body.likes ? body.likes : 0,
         user: user._id,
+        comments: [],
       })
 
       const savedBlog = await blog.save()
@@ -81,6 +82,7 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
   blog.url = body.url ? body.url : blog.url
   blog.likes = body.likes ? body.likes : blog.likes
   blog.author = body.author ? body.author : blog.author
+  blog.comments = body.comments ? body.comments : blog.comments
 
   let newBlog = await blog.save()
 

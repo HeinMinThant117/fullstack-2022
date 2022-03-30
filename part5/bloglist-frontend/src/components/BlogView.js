@@ -25,6 +25,13 @@ const BlogView = () => {
     setBlog({ ...blog, ...newBlog })
   }
 
+  const handleComment = async (event) => {
+    event.preventDefault()
+    blog.comments.push(event.target.comment.value)
+    let updatedBlog = await blogService.update(blog.id, blog)
+    setBlog(updatedBlog)
+  }
+
   if (!blog) return null
 
   return (
@@ -37,6 +44,16 @@ const BlogView = () => {
         {blog.likes} likes <button onClick={handleLike}>like</button>
       </div>
       <p>added by {blog.user.name}</p>
+      <h3>comments</h3>
+      <form onSubmit={handleComment}>
+        <input name='comment' />
+        <button>add comment</button>
+      </form>
+      <ul>
+        {blog.comments.map((comment, index) => (
+          <li key={index}>{comment}</li>
+        ))}
+      </ul>
     </div>
   )
 }
