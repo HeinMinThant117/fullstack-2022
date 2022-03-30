@@ -11,19 +11,23 @@ const UserInfo = () => {
   if (users.length <= 0) return null
 
   return (
-    <div>
-      <h2>Users</h2>
-      <tr>
-        <td></td>
-        <td>blogs created</td>
-      </tr>
-      {users.map((user) => (
-        <tr key={user.id}>
-          <td>{user.name}</td>
-          <td>{user.blogs.length}</td>
+    <table>
+      <tbody>
+        <h2>Users</h2>
+        <tr>
+          <td></td>
+          <td>blogs created</td>
         </tr>
-      ))}
-    </div>
+        {users.map((user) => (
+          <tr key={user.id}>
+            <td>
+              <a href={'/users/' + user.id}>{user.name}</a>
+            </td>
+            <td>{user.blogs.length}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }
 
