@@ -9,6 +9,8 @@ import { setNotification } from './reducers/notificationReducer'
 import { setUser } from './reducers/userReducer'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import UserInfo from './components/UserInfo'
 
 const Notification = () => {
   const notification = useSelector((state) => state.notification)
@@ -68,7 +70,6 @@ const App = () => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBlogUser')
     dispatch(setUser(null))
-    // setUser(null)
   }
 
   const handleUsernameChange = (username) => {
@@ -87,13 +88,25 @@ const App = () => {
         <div>
           {user.username} has logged in{' '}
           <button onClick={handleLogout}>log out</button>
-          <h2>create new</h2>
-          <Toggleable buttonLabel='new blog' ref={blogFormRef}>
-            <BlogForm />
-          </Toggleable>
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} user={user} />
-          ))}
+          <Router>
+            <Routes>
+              <Route
+                path='/'
+                element={
+                  <>
+                    <h2>create new</h2>
+                    <Toggleable buttonLabel='new blog' ref={blogFormRef}>
+                      <BlogForm />
+                    </Toggleable>
+                    {blogs.map((blog) => (
+                      <Blog key={blog.id} blog={blog} user={user} />
+                    ))}
+                  </>
+                }
+              />
+              <Route path='/users' element={<UserInfo />} />
+            </Routes>
+          </Router>
         </div>
       ) : (
         <LoginForm
