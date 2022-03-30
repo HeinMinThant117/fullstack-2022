@@ -16,7 +16,6 @@ const Blog = ({ blog, user }) => {
       author: blog.author,
       likes: blog.likes + 1,
     }
-    // updateBlog(blog.id, newBlog)
     dispatch(likeBlog(blog.id, newBlog))
   }
 
