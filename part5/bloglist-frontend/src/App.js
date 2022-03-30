@@ -12,6 +12,7 @@ import loginService from './services/login'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import UserInfo from './components/UserInfo'
 import User from './components/User'
+import BlogView from './components/BlogView'
 
 const Notification = () => {
   const notification = useSelector((state) => state.notification)
@@ -107,6 +108,7 @@ const App = () => {
               />
               <Route path='/users' element={<UserInfo />} />
               <Route path='/users/:id' element={<User />} />
+              <Route path='/blogs/:id' element={<BlogView />} />
             </Routes>
           </Router>
         </div>
