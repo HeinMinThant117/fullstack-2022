@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { createBlog } from '../reducers/blogsReducer'
 
-const BlogForm = ({ createBlog }) => {
+const BlogForm = () => {
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [author, setAuthor] = useState('')
+  const dispatch = useDispatch()
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value)
@@ -19,7 +22,8 @@ const BlogForm = ({ createBlog }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    createBlog(title, author, url)
+    dispatch(createBlog({ title, author, url }))
+    // createBlog(title, author, url)
   }
 
   return (
@@ -48,7 +52,9 @@ const BlogForm = ({ createBlog }) => {
           onChange={handleUrlChange}
         />
       </div>
-      <button id='createBtn' type='submit'>create</button>
+      <button id='createBtn' type='submit'>
+        create
+      </button>
     </form>
   )
 }
