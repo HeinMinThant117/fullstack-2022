@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
-const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
+import { useDispatch } from 'react-redux'
+import { deleteBlog, likeBlog } from '../reducers/blogsReducer'
+const Blog = ({ blog, user }) => {
   const [blogVisible, setBlogVisible] = useState(false)
+  const dispatch = useDispatch()
 
   const toggleBlogVisibility = () => {
     setBlogVisible(!blogVisible)
@@ -13,7 +16,8 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
       author: blog.author,
       likes: blog.likes + 1,
     }
-    updateBlog(blog.id, newBlog)
+    // updateBlog(blog.id, newBlog)
+    dispatch(likeBlog(blog.id, newBlog))
   }
 
   const handleDelete = () => {
@@ -22,7 +26,7 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
         `Are you sure you want to delete ${blog.title} by ${blog.author} ?`
       )
     )
-      deleteBlog(blog.id)
+      dispatch(deleteBlog(blog.id))
   }
 
   return (

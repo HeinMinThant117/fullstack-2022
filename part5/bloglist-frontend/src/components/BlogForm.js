@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { createBlog } from '../reducers/blogsReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
 const BlogForm = () => {
   const [title, setTitle] = useState('')
@@ -23,6 +24,7 @@ const BlogForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault()
     dispatch(createBlog({ title, author, url }))
+    dispatch(setNotification(`${title} by ${author} has been created`))
     // createBlog(title, author, url)
   }
 

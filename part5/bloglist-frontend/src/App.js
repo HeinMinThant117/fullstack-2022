@@ -72,41 +72,6 @@ const App = () => {
     setUser(null)
   }
 
-  //   const createBlog = async (title, author, url) => {
-  //     // try {
-  //     //   const savedBlog = await blogService.create({ title, author, url })
-  //     //   dispatch(
-  //     //     setNotification(
-  //     //       `a new blog ${savedBlog.title} by ${savedBlog.author} has been added`
-  //     //     )
-  //     //   )
-  //     //   //   setBlogs(blogs.concat(savedBlog))
-  //     // } catch (exception) {
-  //     //   console.log(exception)
-  //     // }
-  //     // dispatch(createBlog({ title, author, url }))
-  //   }
-
-  //   //   const updateBlog = async (id, newBlog) => {
-  //   //     try {
-  //   //       const updatedBlog = await blogService.update(id, newBlog)
-  //   //       setBlogs(
-  //   //         blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
-  //   //       )
-  //   //     } catch (exception) {
-  //   //       console.log(exception.body)
-  //   //     }
-  //   //   }
-
-  const deleteBlog = async (id) => {
-    try {
-      await blogService.remove(id)
-      //   setBlogs(blogs.filter((blog) => blog.id !== id))
-    } catch (exception) {
-      console.log(exception.message)
-    }
-  }
-
   const handleUsernameChange = (username) => {
     setUsername(username)
   }
@@ -128,15 +93,14 @@ const App = () => {
             <BlogForm />
           </Toggleable>
           {blogs
-            .slice()
-            .sort((a, b) => b.likes - a.likes)
+            // .slice()
+            // .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
               <Blog
                 key={blog.id}
                 blog={blog}
                 user={user}
                 // updateBlog={updateBlog}
-                deleteBlog={deleteBlog}
               />
             ))}
         </div>
